@@ -1,0 +1,16 @@
+service: page-searches-lambda
+
+provider:
+  name: aws
+  runtime: java8
+  profile: local
+  region: us-east-1
+  timeout: 10
+  memorySize: 1024
+
+package:
+  artifact: target/search-pages-0.0.1.jar
+
+functions:
+  pagesLamda:
+    handler: io.search.pages.Pages

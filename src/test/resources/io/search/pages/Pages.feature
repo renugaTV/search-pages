@@ -49,3 +49,23 @@ Feature: Pages
     Given I want to display 25 pages
     When I click page Number 4 AND I have 20 total available results pages
     Then I should get page Numbers of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+  Scenario: Test AWS Scenario of Receiving evnt
+    Given I have a pages Lambda
+    When I sent event with currentPage as 6 totalAvailablePages as 15 and maximumNumberOfPagesToDisplay as 10
+    Then I should get page Numbers of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+  Scenario: Test AWS Scenario of Receiving evnt
+    Given I have a pages Lambda
+    When I sent event with currentPage as 10 totalAvailablePages as 15 and maximumNumberOfPagesToDisplay as 11
+    Then I should get page Numbers of [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+  Scenario: Edge case Scenario where lambda not receives the expected number of input params
+    Given I have a pages Lambda
+    When I sent event with no params
+    Then I should get InputLengthException with the message of "Input must be a Map that contains 3 params currentPage, maximumNumberOfPagesToDisplay and totalAvailablePages"
+
+  Scenario: Edge case Scenario where lambda not receives the expected input params
+    Given I have a pages Lambda
+    When I sent event with incorrect params of "currentIndex" as currentPage 
+    Then I should get IllegalArgumentException with the message of "input is missing required params of currentPage, maximumNumberOfPagesToDisplay or totalAvailablePages"

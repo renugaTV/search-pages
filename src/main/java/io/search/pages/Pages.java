@@ -3,21 +3,31 @@ package io.search.pages;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-public class Pages {
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+
+import io.search.InputLengthException;
+
+public class Pages implements RequestHandler<Map<String, Integer>, List<Integer>> {
     private int maxNumberOfPagesToDisplay = 10;
     private final List<Page> pageList = new ArrayList<>();
 
-    Pages() {
-
-    }
-
-    Pages(List<Page> pages) {
-        this.pageList.addAll(pages);
-    }
-
-    public void addPages(Page page) {
-        pageList.add(page);
+    @Override
+    public List<Integer> handleRequest(Map<String, Integer> event, Context context) {
+        if (event.size() != 3) {
+            throw new InputLengthException(
+                    "Input must be a Map that contains 3 params currentPage, maximumNumberOfPagesToDisplay and totalAvailablePages");
+        }
+        if (!event.containsKey("currentPage") || !event.containsKey("totalAvailablePages")
+                || !event.containsKey("maximumNumberOfPagesToDisplay")) {
+            throw new IllegalArgumentException(
+                    "input is missing required params of currentPage, maximumNumberOfPagesToDisplay or totalAvailablePages");
+        }
+        this.setMaxNumberOfPagesToDisplay(event.get("maximumNumberOfPagesToDisplay"));
+        List<Integer> response = this.retrievePages(event.get("currentPage"), event.get("totalAvailablePages"));
+        return response;
     }
 
     public List<Integer> retrievePages(int currentPageNumber, int totalPagesOfResults) {
