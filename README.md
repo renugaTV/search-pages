@@ -43,7 +43,7 @@ So The Architecture of Future implementation should look like as below.
 
 
 
-The demo of Pages-Search-Lambda through AWS console
+The demo of Pages-Search-Lambda through AWS console testing both Happy path Scenario and Error Scenario
 
 ![new-pages-search_AdobeExpress](https://github.com/renugaTV/search-pages/assets/15089078/11d387f9-a795-4add-b01f-65ae9cef7f66)
 
