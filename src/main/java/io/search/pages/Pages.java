@@ -4,33 +4,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import io.search.InputLengthException;
 
-public class Pages implements RequestHandler<Map<String, Integer>, List<Integer>> {
+public class Pages implements RequestHandler<Map<String, Integer>, List<String>> {
     private int maxNumberOfPagesToDisplay = 10;
-    private final List<Page> pageList = new ArrayList<>();
+    public static final String NEXT = "Next";
+    public static final String PREVIOUS = "Previous";
+    public static final String CURRENT_PAGE = "currentPage";
+    public static final String TOTAL_AVAILABLE_PAGES = "totalAvailablePages";
+    public static final String MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY = "maximumNumberOfPagesToDisplay";
 
     @Override
-    public List<Integer> handleRequest(Map<String, Integer> event, Context context) {
+    public List<String> handleRequest(Map<String, Integer> event, Context context) {
         if (event.size() != 3) {
             throw new InputLengthException(
-                    "Input must be a Map that contains 3 params currentPage, maximumNumberOfPagesToDisplay and totalAvailablePages");
+                    "Input must be a Map that contains 3 params " + CURRENT_PAGE + ", "
+                            + MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY + " and " + TOTAL_AVAILABLE_PAGES);
         }
-        if (!event.containsKey("currentPage") || !event.containsKey("totalAvailablePages")
-                || !event.containsKey("maximumNumberOfPagesToDisplay")) {
+        if (!event.containsKey(CURRENT_PAGE) || !event.containsKey(TOTAL_AVAILABLE_PAGES)
+                || !event.containsKey(MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY)) {
             throw new IllegalArgumentException(
-                    "input is missing required params of currentPage, maximumNumberOfPagesToDisplay or totalAvailablePages");
+                    "input is missing required params of " + CURRENT_PAGE + ", " + MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY
+                            + " or " + TOTAL_AVAILABLE_PAGES);
         }
-        this.setMaxNumberOfPagesToDisplay(event.get("maximumNumberOfPagesToDisplay"));
-        List<Integer> response = this.retrievePages(event.get("currentPage"), event.get("totalAvailablePages"));
+        this.setMaxNumberOfPagesToDisplay(event.get(MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY));
+        List<String> response = this.retrievePages(event.get(CURRENT_PAGE), event.get(TOTAL_AVAILABLE_PAGES));
         return response;
     }
 
-    public List<Integer> retrievePages(int currentPageNumber, int totalPagesOfResults) {
+    public List<String> retrievePages(int currentPageNumber, int totalPagesOfResults) {
         List<Integer> resultPages = new ArrayList<>();
         int leftIndex = currentPageNumber - 1;
         int rightIndex = currentPageNumber + 1;
@@ -52,7 +59,15 @@ public class Pages implements RequestHandler<Map<String, Integer>, List<Integer>
             }
         }
         Collections.sort(resultPages);
-        return resultPages;
+        List<String> listOfResults = resultPages.stream().map(Object::toString)
+                .collect(Collectors.toList());
+        if (currentPageNumber < totalPagesOfResults) {
+            listOfResults.add(resultPages.size(), NEXT);
+        }
+        if (currentPageNumber > 1) {
+            listOfResults.add(0, PREVIOUS);
+        }
+        return listOfResults;
     }
 
     public void setMaxNumberOfPagesToDisplay(int maxNumberOfPagesToDisplay) {

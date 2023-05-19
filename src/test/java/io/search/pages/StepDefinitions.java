@@ -23,6 +23,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 import io.cucumber.core.logging.Logger;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.ParameterType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -38,7 +39,7 @@ public class StepDefinitions {
     Pages pagesLambda;
 
     Pages pages = new Pages();
-    private List<Integer> actualResult;
+    private List<String> actualResult;
 
     private String incorrectParamErrorMessage;
 
@@ -54,9 +55,9 @@ public class StepDefinitions {
         actualResult = pages.retrievePages(currentPageNumber, totalPages);
     }
 
-    @Then("I should get page Numbers of {listOfIntegers}")
-    public void i_should_get_page_numbers_of(List<Integer> expectedList) {
-        assertEquals(expectedList, actualResult);
+    @Then("^I should get page Numbers of$")
+    public void i_should_get_page_numbers_of(DataTable expectedDataTable) {
+        assertEquals(expectedDataTable.transpose().asList(String.class), actualResult);
     }
 
     @ParameterType("\\[([0-9, ]*)\\]")
@@ -76,9 +77,9 @@ public class StepDefinitions {
     public void i_sent_event_with_currentpage_totalavailable_pages_and_maximum_number_of_pgaes_to_display(
             int currentPage, int totalAvailablePages, int maximumNumberOfPagesToDisplay) {
         HashMap<String, Integer> inputMap = new HashMap<String, Integer>();
-        inputMap.put("currentPage", currentPage);
-        inputMap.put("totalAvailablePages", totalAvailablePages);
-        inputMap.put("maximumNumberOfPagesToDisplay", maximumNumberOfPagesToDisplay);
+        inputMap.put(Pages.CURRENT_PAGE, currentPage);
+        inputMap.put(Pages.TOTAL_AVAILABLE_PAGES, totalAvailablePages);
+        inputMap.put(Pages.MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY, maximumNumberOfPagesToDisplay);
         actualResult = pagesLambda.handleRequest(inputMap, context);
     }
 
@@ -87,8 +88,8 @@ public class StepDefinitions {
         // Write code here that turns the phrase above into concrete actions
         HashMap<String, Integer> inputMap = new HashMap<String, Integer>();
         inputMap.put(incorrectParam, 1);
-        inputMap.put("totalAvailablePages", 2);
-        inputMap.put("maximumNumberOfPagesToDisplay", 10);
+        inputMap.put(Pages.TOTAL_AVAILABLE_PAGES, 2);
+        inputMap.put(Pages.MAXIMUM_NUMBER_OF_PAGES_TO_DISPLAY, 10);
         try {
             pagesLambda.handleRequest(inputMap, context);
         } catch (IllegalArgumentException e) {
