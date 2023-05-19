@@ -35,5 +35,6 @@ So The Architecture of Future implementation should look like as below.
 
 
 The demo of Lambda through console
+
 ![pages-search-lambda-demo_AdobeExpress](https://github.com/renugaTV/search-pages/assets/15089078/0ec1f940-3a53-435c-978b-5c00caf03b23)
 
