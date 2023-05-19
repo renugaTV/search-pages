@@ -1,4 +1,4 @@
-service: page-searches-lambda
+service: pages-search-lambda
 
 provider:
   name: aws
