@@ -30,5 +30,5 @@ Eloborating Iteration 4 here with below steps:
 
 So The Architecture of Future implementation should look like as below.
 
+![Screenshot](architecture.png)
 
-![img.png](img.png)
