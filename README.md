@@ -45,7 +45,8 @@ So The Architecture of Future implementation should look like as below.
 
 The demo of Pages-Search-Lambda through AWS console
 
-![pages-search-lambda-demo_AdobeExpress (3)](https://github.com/renugaTV/search-pages/assets/15089078/fa917a02-0489-4fe3-a4c5-d88a61208602)
+![new-pages-search_AdobeExpress](https://github.com/renugaTV/search-pages/assets/15089078/11d387f9-a795-4add-b01f-65ae9cef7f66)
+
 
 
 
